@@ -2,7 +2,7 @@
 PROJECT(PROJECT_NAME)
 
 #include some macros from another file...
-INCLUDE(${CMAKE_SOURCE_DIR}/IJMacros.txt)
+INCLUDE(IJMacros.txt)
 
 #The following lines are required to use Dart
 ENABLE_TESTING()
@@ -13,7 +13,6 @@ INCLUDE(Dart)
 #If you're not sure what name to use, look in the Modules directory of your
 #cmake install and check that a file named Find(Package).cmake exists
 SET(Required_Packages
-#list packages here
 )
 
 #this foreach loads all of the packages that you specified as required.
@@ -25,7 +24,7 @@ ENDFOREACH(Package)
 #Set any libraries that your project depends on.
 #examples: ITKCommon, VTKRendering, etc
 SET(Libraries
-#list libraries here
+  ITKCommon
 )
 
 #the following block of code is an example of how to build an executable in
@@ -44,5 +43,4 @@ TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
 #for this test.  Include as many tests as you like.  If your project doesn't have
 #any tests you can comment out or delete the following line.
 ADD_TEST(Testname ExecutableToRun arg1 arg2 arg3)
-
-#Once you're done modifying this template, you should rename it to "CMakeLists.txt"
+ADD_TEST(CompareImage ImageCompare ${CMAKE_SOURCE_DIR}/img1.png ${CMAKE_SOURCE_DIR}/img1.png.base.png)
