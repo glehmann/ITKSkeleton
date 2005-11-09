@@ -13,6 +13,7 @@ INCLUDE(Dart)
 #If you're not sure what name to use, look in the Modules directory of your
 #cmake install and check that a file named Find(Package).cmake exists
 SET(Required_Packages
+  ITK
 )
 
 #this foreach loads all of the packages that you specified as required.
