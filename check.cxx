@@ -75,8 +75,8 @@ int main(int, char * argv[])
   typedef itk::ImageFileWriter< IType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetInput( filter->GetOutput() );
+  writer->SetFileName( argv[2] );
   writer->UpdateLargestPossibleRegion();
-  writer->Update();
 
   return 0;
 }
