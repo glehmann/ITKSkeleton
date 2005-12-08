@@ -19,16 +19,6 @@ int main(int, char * argv[])
 
   typedef itk::ImageFilter< IType, IType > FilterType;
   FilterType::Pointer filter = FilterType::New();
-  // test the filter without input or parameters
-  try
-    {
-    filter->Update();
-    // comment this line if the filter don't have to send an exception
-    return EXIT_FAILURE;
-    }
-  catch (itk::ExceptionObject & e)
-    {}
-  // set the input
   filter->SetInput( reader->GetOutput() );
 
   itk::SimpleFilterWatcher watcher(filter, "filter");
@@ -37,7 +27,7 @@ int main(int, char * argv[])
   WriterType::Pointer writer = WriterType::New();
   writer->SetInput( filter->GetOutput() );
   writer->SetFileName( argv[2] );
-  writer->UpdateLargestPossibleRegion();
+  writer->Update();
 
   return 0;
 }
