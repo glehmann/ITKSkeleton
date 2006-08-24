@@ -1,5 +1,5 @@
 #Change PROJECT_NAME to the name of your project
-PROJECT()
+PROJECT(ITKSkeleton)
 
 # set the name of the input image used to run the test
 SET(INPUT_IMAGE ${CMAKE_SOURCE_DIR}/images/cthead1.png)
@@ -62,7 +62,7 @@ ENDIF(BUILD_WRAPPERS)
 
 IF(BUILD_TESTING)
 
-SET(CurrentExe "check")
+SET(CurrentExe "main")
 ADD_EXECUTABLE(${CurrentExe} ${CurrentExe}.cxx)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
 
