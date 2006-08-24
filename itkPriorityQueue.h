@@ -153,6 +153,9 @@ public:
   /** push a value in the queue */
   inline void Push( const KeyType & k, const ValueType & v)
     {
+    assert( k  - NT::NonpositiveMin() < m_Vector.size() );
+    assert( k  - NT::NonpositiveMin() >= 0 );
+
     m_Vector[ k  - NT::NonpositiveMin() ].push_back( v );
     if( this->Empty() || m_Compare( k, m_CurrentValue ) )
       {
@@ -206,6 +209,8 @@ public:
     m_Size = 0;
     // initialized to make valgrind happy
     m_CurrentValue = 0;
+
+    assert( m_Vector.size() != 0 );
     }
 
 
