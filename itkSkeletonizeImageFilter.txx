@@ -117,6 +117,32 @@ SkeletonizeImageFilter<TImage, TForegroundConnectivity>
     delete[] inQueue;
 }
 
+
+template<typename TImage, typename TForegroundConnectivity>
+void 
+SkeletonizeImageFilter<TImage, TForegroundConnectivity>
+::GenerateInputRequestedRegion()
+{
+  // call the superclass' implementation of this method
+  Superclass::GenerateInputRequestedRegion();
+
+  // get pointers to the inputs
+  typename OrderingImageType::Pointer  orderingPtr = this->GetOrderingImage();
+
+  typename TImage::Pointer  inputPtr =
+    const_cast< TImage * >( this->GetInput() );
+
+  if ( !orderingPtr || !inputPtr )
+    { return; }
+
+  // We need to
+  // configure the inputs such that all the data is available.
+  //
+  orderingPtr->SetRequestedRegion(orderingPtr->GetLargestPossibleRegion());
+  inputPtr->SetRequestedRegion(inputPtr->GetLargestPossibleRegion());
+}
+
+
 } // namespace itk
 
 #endif // itkSkeletonizationImageFilter_txx

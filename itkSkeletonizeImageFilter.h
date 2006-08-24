@@ -114,8 +114,8 @@ protected :
     
     void GenerateData();
     
-    typename OrderingImageType::Pointer m_OrderingImage;
-    
+    void GenerateInputRequestedRegion();
+
     typename ImageFunction<TImage, bool >::Pointer m_SimplicityCriterion;
     typename ImageFunction<TImage, bool >::Pointer m_TerminalityCriterion;
     
