@@ -4,6 +4,7 @@
 #include "UnitCubeCCCounter.h"
 
 #include <queue>
+#include <list>
 
 namespace itk
 {
@@ -53,7 +54,7 @@ UnitCubeCCCounter<TConnectivity, TNeighborhoodConnectivity>
         ++nbCC;
         processed[seed] = true;
         
-        std::queue<unsigned int> q;
+        std::queue<unsigned int, std::list<unsigned int> > q;
         q.push(seed);
         
         while(!q.empty())
