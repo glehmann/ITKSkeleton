@@ -7,10 +7,12 @@
 #include "itkSkeletonizeImageFilter.h"
 
 #include "itkChamferDistanceTransformImageFilter.h"
+#include "itkSimpleFilterWatcher.h"
 
 int main(int argc, char** argv)
 {
-    typedef itk::Image<char, 3> Image;
+    const int dim = 3;
+    typedef itk::Image<unsigned char, dim> Image;
     
     itk::ImageFileReader<Image>::Pointer reader = itk::ImageFileReader<Image>::New();
     reader->SetFileName(argv[1]);
@@ -18,7 +20,7 @@ int main(int argc, char** argv)
     
     Image::Pointer image = reader->GetOutput();
     
-    typedef itk::SkeletonizeImageFilter<Image, itk::Connectivity<3, 0> > Skeletonizer;
+    typedef itk::SkeletonizeImageFilter<Image, itk::Connectivity<dim, 0> > Skeletonizer;
     
     typedef itk::ChamferDistanceTransformImageFilter<Image, Skeletonizer::OrderingImageType> DistanceMapFilterType;
     DistanceMapFilterType::Pointer distanceMapFilter = DistanceMapFilterType::New();
@@ -26,17 +28,17 @@ int main(int argc, char** argv)
     distanceMapFilter->distanceFromObject = false;
     distanceMapFilter->SetWeights(weights, weights+3);
     distanceMapFilter->SetInput(image);
+    // itk::SimpleFilterWatcher watcher(distanceMapFilter, "distanceMapFilter");
     distanceMapFilter->Update();
     
     Skeletonizer::Pointer skeletonizer = Skeletonizer::New();
     skeletonizer->SetInput(image);
     skeletonizer->SetOrderingImage(distanceMapFilter->GetOutput());
-    skeletonizer->Update();
-    Image::Pointer skeleton = skeletonizer->GetOutput();
+    itk::SimpleFilterWatcher watcher2(skeletonizer, "skeletonizer");
     
     itk::ImageFileWriter<Image>::Pointer writer = itk::ImageFileWriter<Image>::New();
     writer->SetFileName(argv[2]);
-    writer->SetInput(skeleton);
+    writer->SetInput(skeletonizer->GetOutput());
     writer->Update();
     
     return EXIT_SUCCESS;

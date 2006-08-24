@@ -10,6 +10,7 @@
 
 #include "itkLineTerminalityImageFunction.h"
 #include "itkSimplicityByTopologicalNumbersImageFunction.h"
+#include "itkProgressReporter.h"
 
 namespace itk
 {
@@ -63,6 +64,10 @@ SkeletonizeImageFilter<TImage, TForegroundConnectivity>
     
     bool* inQueue = new bool[ outputImage->GetRequestedRegion().GetNumberOfPixels() ];
     
+    // set up progress reporter. There is 2 steps, but we can't know how many pixels will be
+    // in the second one, so use the maximum
+    ProgressReporter progress(this, 0, outputImage->GetRequestedRegion().GetNumberOfPixels()*2);
+
     for(ImageRegionConstIteratorWithIndex<OrderingImageType> it(orderingImage, orderingImage->GetRequestedRegion());
         !it.IsAtEnd(); 
         ++it)
@@ -76,6 +81,7 @@ SkeletonizeImageFilter<TImage, TForegroundConnectivity>
         {
             inQueue[ outputImage->ComputeOffset(it.GetIndex()) ] = false;
         }
+        progress.CompletedPixel();
     }
     
     ForegroundConnectivity const & connectivity = ForegroundConnectivity::GetInstance();
@@ -112,6 +118,7 @@ SkeletonizeImageFilter<TImage, TForegroundConnectivity>
                 }
             }
         }
+        progress.CompletedPixel();
     }
     
     delete[] inQueue;
