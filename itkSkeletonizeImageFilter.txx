@@ -17,10 +17,10 @@ namespace itk
 template<typename TImage, typename TForegroundConnectivity>
 SkeletonizeImageFilter<TImage, TForegroundConnectivity>
 ::SkeletonizeImageFilter()
-: m_OrderingImage(0),
-  m_SimplicityCriterion(0),
+: m_SimplicityCriterion(0),
   m_TerminalityCriterion(0)
 {
+  this->SetNumberOfRequiredInputs(2);
 }
 
 
@@ -40,11 +40,7 @@ SkeletonizeImageFilter<TImage, TForegroundConnectivity>
 ::GenerateData()
 {
     this->AllocateOutputs();
-    
-    if(m_OrderingImage.IsNull())
-    {
-        itkExceptionMacro("No distance map available, cannot skeletonize image");
-    }
+    typename OrderingImageType::Pointer orderingImage = this->GetOrderingImage();
     
     if(m_SimplicityCriterion.IsNull())
     {
@@ -67,7 +63,7 @@ SkeletonizeImageFilter<TImage, TForegroundConnectivity>
     
     bool* inQueue = new bool[ outputImage->GetRequestedRegion().GetNumberOfPixels() ];
     
-    for(ImageRegionConstIteratorWithIndex<OrderingImageType> it(m_OrderingImage, m_OrderingImage->GetRequestedRegion());
+    for(ImageRegionConstIteratorWithIndex<OrderingImageType> it(orderingImage, orderingImage->GetRequestedRegion());
         !it.IsAtEnd(); 
         ++it)
     {
@@ -109,9 +105,9 @@ SkeletonizeImageFilter<TImage, TForegroundConnectivity>
                 if( /*outputImage->GetRequestedRegion().IsInside(currentNeighbor) &&*/
                     outputImage->GetPixel(currentNeighbor) != NumericTraits<typename OutputImageType::PixelType>::Zero && /* currentNeighbor is in image */
                     !inQueue[outputImage->ComputeOffset(currentNeighbor)]  /* and not in queue */ &&  
-                    m_OrderingImage->GetPixel(currentNeighbor) != NumericTraits<typename OrderingImageType::PixelType>::Zero /*and has not 0 priority*/)
+                    orderingImage->GetPixel(currentNeighbor) != NumericTraits<typename OrderingImageType::PixelType>::Zero /*and has not 0 priority*/)
                 {
-                    q.push(m_OrderingImage->GetPixel(currentNeighbor), currentNeighbor);
+                    q.push(orderingImage->GetPixel(currentNeighbor), currentNeighbor);
                     inQueue[outputImage->ComputeOffset(currentNeighbor)] = true;
                 }
             }

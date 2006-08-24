@@ -74,8 +74,16 @@ public :
      * @name Accessors for the ordering image.
      */
     //@{
-    itkGetConstObjectMacro(OrderingImage, OrderingImageType);
-    itkSetObjectMacro(OrderingImage, OrderingImageType);
+    void SetOrderingImage(OrderingImageType *input)
+      {
+      // Process object is not const-correct so the const casting is required.
+      this->SetNthInput( 1, const_cast<OrderingImageType *>(input) );
+      }
+  
+    OrderingImageType * GetOrderingImage()
+      {
+      return static_cast<OrderingImageType*>(const_cast<DataObject *>(this->ProcessObject::GetInput(1)));
+      }
     //@}
     
     /**
