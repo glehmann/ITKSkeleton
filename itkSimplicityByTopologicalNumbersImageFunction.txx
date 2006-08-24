@@ -44,6 +44,17 @@ SimplicityByTopologicalNumbersImageFunction<TImage, TForegroundConnectivity, TBa
     return EvaluateAtIndex(index);
 }
 
+template<typename TImage, typename TForegroundConnectivity, typename TBackgroundConnectivity >
+void
+SimplicityByTopologicalNumbersImageFunction<TImage, TForegroundConnectivity, TBackgroundConnectivity>
+::SetForegroundValue( const InputPixelType & v )
+{
+  Superclass::SetForegroundValue( v );
+  this->m_TnCounter->SetForegroundValue( v );
+}
+
+
+
 }
 
 #endif // itkSimplicityByTopologicalNumbersImageFunction_txx

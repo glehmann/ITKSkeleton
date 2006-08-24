@@ -46,7 +46,7 @@ TopologicalNumberImageFunction<TImage, TFGConnectivity, TBGConnectivity>
             --offset[j];
         }
         
-        subImage[i] = (this->GetInputImage()->GetPixel(index+offset)!=itk::NumericTraits<typename TImage::PixelType>::Zero)?255:0;
+        subImage[i] = (this->GetInputImage()->GetPixel(index+offset) == this->m_ForegroundValue)?255:0;
     }
     subImage[13] = 0;
     

@@ -1,7 +1,7 @@
 #ifndef itkLineTerminalityImageFunction_h
 #define itkLineTerminalityImageFunction_h
 
-#include <itkImageFunction.h>
+#include "itkBinaryImageFunction.h"
 
 #include "BackgroundConnectivity.h"
 
@@ -11,7 +11,7 @@ namespace itk
 template<typename TImage, 
          typename TForegroundConnectivity, 
          typename TBackgroundConnectivity = typename BackgroundConnectivity<TForegroundConnectivity>::Type  >
-class LineTerminalityImageFunction : public itk::ImageFunction<TImage, bool >
+class LineTerminalityImageFunction : public itk::BinaryImageFunction<TImage, bool >
 {
 public :
     /**

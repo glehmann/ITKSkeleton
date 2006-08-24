@@ -35,7 +35,7 @@ LineTerminalityImageFunction<TImage, TForegroundConnectivity, TBackgroundConnect
         {
             offset[j] = fgc.GetNeighborsPoints()[i][j];
         }
-        if(this->GetInputImage()->GetPixel(index+offset)!=NumericTraits<typename TImage::PixelType>::Zero)
+        if(this->GetInputImage()->GetPixel(index+offset) == this->m_ForegroundValue)
         {
             ++nbNeighbors;
         }

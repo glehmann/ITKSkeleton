@@ -42,6 +42,9 @@ public :
     typedef OutputImage OutputImageType;
     //@}
     
+    /** Declaration of pixel type. */
+    typedef typename InputImageType::PixelType InputPixelType ;
+
     /**
      * @brief Initializes the filter.
      * 
@@ -72,6 +75,10 @@ public :
      */
     std::vector<typename OutputImage::PixelType> GetWeights() const;
 
+    /** Set/Get the foreground value. Defaults to max */
+    itkSetMacro(ForegroundValue, InputPixelType);
+    itkGetMacro(ForegroundValue, InputPixelType);
+
 protected :
     void PrintSelf(std::ostream& os, Indent indent) const;
     
@@ -82,6 +89,7 @@ private :
     
     ChamferDistanceTransformImageFilter(Self const &); // not implemented
     Self & operator=(Self const &); // not implemented
+    InputPixelType m_ForegroundValue;
 };
 
 }

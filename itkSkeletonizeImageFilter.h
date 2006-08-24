@@ -2,7 +2,7 @@
 #define itkSkeletonizationImageFilter_h
 
 #include <itkImage.h>
-#include <itkImageFunction.h>
+#include "itkBinaryImageFunction.h"
 #include <itkInPlaceImageFilter.h>
 
 namespace itk
@@ -68,8 +68,19 @@ public :
     /**
      * @brief Type of the simplicity and terminality functors.
      */
-    typedef ImageFunction<OutputImageType, bool> Criterion;
+    typedef BinaryImageFunction<OutputImageType, bool> Criterion;
     
+    /** Declaration of pixel type. */
+    typedef typename InputImageType::PixelType InputPixelType ;
+
+    /** Set/Get the foreground value. Defaults to max */
+    itkSetMacro(ForegroundValue, InputPixelType);
+    itkGetMacro(ForegroundValue, InputPixelType);
+
+    /** Set/Get the foreground value. Defaults to zero */
+    itkSetMacro(BackgroundValue, InputPixelType);
+    itkGetMacro(BackgroundValue, InputPixelType);
+
     /**
      * @name Accessors for the ordering image.
      */
@@ -116,8 +127,11 @@ protected :
     
     void GenerateInputRequestedRegion();
 
-    typename ImageFunction<TImage, bool >::Pointer m_SimplicityCriterion;
-    typename ImageFunction<TImage, bool >::Pointer m_TerminalityCriterion;
+    typename Criterion::Pointer m_SimplicityCriterion;
+    typename Criterion::Pointer m_TerminalityCriterion;
+
+    InputPixelType m_ForegroundValue;
+    InputPixelType m_BackgroundValue;
     
 };
 

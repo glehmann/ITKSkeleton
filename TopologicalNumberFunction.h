@@ -3,7 +3,7 @@
 
 #include <utility>
 
-#include <itkImageFunction.h>
+#include "itkBinaryImageFunction.h"
 
 #include "BackgroundConnectivity.h"
 #include "UnitCubeCCCounter.h"
@@ -22,7 +22,7 @@ namespace itk
 template<typename TImage, 
          typename TFGConnectivity, 
          typename TBGConnectivity = typename BackgroundConnectivity<TFGConnectivity>::Type  >
-class TopologicalNumberImageFunction : public itk::ImageFunction<TImage, std::pair<unsigned int, unsigned int> >
+class TopologicalNumberImageFunction : public itk::BinaryImageFunction<TImage, std::pair<unsigned int, unsigned int> >
 {
 public :
     /**
@@ -30,12 +30,12 @@ public :
      */
     //@{
     typedef TopologicalNumberImageFunction Self;
-    typedef itk::ImageFunction<TImage, std::pair<unsigned int, unsigned int> > Superclass;
+    typedef itk::BinaryImageFunction<TImage, std::pair<unsigned int, unsigned int> > Superclass;
     typedef itk::SmartPointer<Self> Pointer;
     typedef itk::SmartPointer<Self const> ConstPointer;
 
     itkNewMacro(Self);
-    itkTypeMacro(TopologicalNumberImageFunction, ImageFunction);
+    itkTypeMacro(TopologicalNumberImageFunction, BinaryImageFunction);
     
     typedef typename Superclass::PointType PointType;
     typedef typename Superclass::ContinuousIndexType ContinuousIndexType;

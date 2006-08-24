@@ -4,6 +4,8 @@
 #include <functional>
 
 #include <itkImageRegionConstIteratorWithIndex.h>
+#include <itkImageRegionConstIterator.h>
+#include <itkImageRegionIterator.h>
 #include <itkNumericTraits.h>
 
 #include "itkPriorityQueue.h"
@@ -18,10 +20,10 @@ namespace itk
 template<typename TImage, typename TForegroundConnectivity>
 SkeletonizeImageFilter<TImage, TForegroundConnectivity>
 ::SkeletonizeImageFilter()
-: m_SimplicityCriterion(0),
-  m_TerminalityCriterion(0)
 {
   this->SetNumberOfRequiredInputs(2);
+  m_ForegroundValue = NumericTraits<InputPixelType>::max();
+  m_BackgroundValue = NumericTraits<InputPixelType>::Zero;
 }
 
 
@@ -32,6 +34,8 @@ SkeletonizeImageFilter<TImage, TForegroundConnectivity>
 {
     Superclass::PrintSelf(os,indent);
     os << indent << "Cell dimension used for foreground connectivity: " <<  ForegroundConnectivity::CellDimension << std::endl;
+    os << indent << "ForegroundValue: " << static_cast<typename NumericTraits<InputPixelType>::PrintType>(m_ForegroundValue) << std::endl;
+    os << indent << "BackgroundValue: " << static_cast<typename NumericTraits<InputPixelType>::PrintType>(m_BackgroundValue) << std::endl;
 }
 
 
@@ -46,14 +50,16 @@ SkeletonizeImageFilter<TImage, TForegroundConnectivity>
     if(m_SimplicityCriterion.IsNull())
     {
         m_SimplicityCriterion = SimplicityByTopologicalNumbersImageFunction<OutputImageType, TForegroundConnectivity>::New();
-        m_SimplicityCriterion->SetInputImage(this->GetInput());
     }
+    m_SimplicityCriterion->SetInputImage(this->GetInput());
+    m_SimplicityCriterion->SetForegroundValue( m_ForegroundValue );
     
     if(m_TerminalityCriterion.IsNull())
     {
         m_TerminalityCriterion = LineTerminalityImageFunction<OutputImageType, TForegroundConnectivity>::New();
-        m_TerminalityCriterion->SetInputImage(this->GetInput());
     }
+    m_TerminalityCriterion->SetInputImage(this->GetInput());
+    m_TerminalityCriterion->SetForegroundValue( m_ForegroundValue );
     
     typename OutputImageType::Pointer outputImage = this->GetOutput(0);
     
@@ -68,19 +74,24 @@ SkeletonizeImageFilter<TImage, TForegroundConnectivity>
     // in the second one, so use the maximum
     ProgressReporter progress(this, 0, outputImage->GetRequestedRegion().GetNumberOfPixels()*2);
 
-    for(ImageRegionConstIteratorWithIndex<OrderingImageType> it(orderingImage, orderingImage->GetRequestedRegion());
-        !it.IsAtEnd(); 
-        ++it)
+    ImageRegionConstIteratorWithIndex<OrderingImageType> ordIt(orderingImage, orderingImage->GetRequestedRegion());
+    ImageRegionConstIterator<InputImageType> iIt(this->GetInput(), orderingImage->GetRequestedRegion());
+    ImageRegionIterator<OutputImageType> oIt(outputImage, orderingImage->GetRequestedRegion());
+
+    for(ordIt.Begin(), iIt.Begin(), oIt.Begin();
+        !ordIt.IsAtEnd(); 
+        ++ordIt, ++iIt, ++oIt)
     {
-        if(it.Get() != NumericTraits<typename OrderingImageType::PixelType>::Zero )
+        if(ordIt.Get() != NumericTraits<typename OrderingImageType::PixelType>::Zero )
         {
-            q.Push(it.Get(), it.GetIndex());
-            inQueue[ outputImage->ComputeOffset(it.GetIndex()) ] = true;
+            q.Push(ordIt.Get(), ordIt.GetIndex());
+            inQueue[ outputImage->ComputeOffset(ordIt.GetIndex()) ] = true;
         }
         else
         {
-            inQueue[ outputImage->ComputeOffset(it.GetIndex()) ] = false;
+            inQueue[ outputImage->ComputeOffset(ordIt.GetIndex()) ] = false;
         }
+        oIt.Set( iIt.Get() );
         progress.CompletedPixel();
     }
     
@@ -97,7 +108,7 @@ SkeletonizeImageFilter<TImage, TForegroundConnectivity>
         
         if( simple && !terminal )
         {
-            outputImage->SetPixel(current, NumericTraits<typename OutputImageType::PixelType>::Zero);
+            outputImage->SetPixel(current, m_BackgroundValue);
             
             // Add neighbors that are not already in the queue
             for(unsigned int i = 0; i < connectivity.GetNumberOfNeighbors(); ++i)
@@ -109,7 +120,7 @@ SkeletonizeImageFilter<TImage, TForegroundConnectivity>
                 }
                 
                 if( /*outputImage->GetRequestedRegion().IsInside(currentNeighbor) &&*/
-                    outputImage->GetPixel(currentNeighbor) != NumericTraits<typename OutputImageType::PixelType>::Zero && /* currentNeighbor is in image */
+                    outputImage->GetPixel(currentNeighbor) == m_ForegroundValue && /* currentNeighbor is in image */
                     !inQueue[outputImage->ComputeOffset(currentNeighbor)]  /* and not in queue */ &&  
                     orderingImage->GetPixel(currentNeighbor) != NumericTraits<typename OrderingImageType::PixelType>::Zero /*and has not 0 priority*/)
                 {

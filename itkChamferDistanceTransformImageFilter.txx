@@ -21,6 +21,7 @@ ChamferDistanceTransformImageFilter<InputImage, OutputImage>
 : distanceFromObject(true)
 {
     std::fill(m_Weights, m_Weights+OutputImage::ImageDimension, 1);
+    m_ForegroundValue = NumericTraits<InputPixelType>::max();
 }
 
 
@@ -57,6 +58,7 @@ ChamferDistanceTransformImageFilter<InputImage, OutputImage>
         os << m_Weights[i] << " ";
     }
     os << "]" << "\n";
+    os << indent << "ForegroundValue: " << static_cast<typename NumericTraits<InputPixelType>::PrintType>(m_ForegroundValue) << std::endl;
 }
 
 
@@ -86,7 +88,7 @@ ChamferDistanceTransformImageFilter<InputImage, OutputImage>
     itk::ImageRegionIterator<OutputImageType> outputImageIt(this->GetOutput(), this->GetOutput()->GetRequestedRegion());
     while(!outputImageIt.IsAtEnd())
     {
-        typename OutputImageType::PixelType const value = (inputImageIt.Get() != NumericTraits<typename InputImageType::PixelType>::Zero) ? fgValue : bgValue;
+        typename OutputImageType::PixelType const value = (inputImageIt.Get() == m_ForegroundValue) ? fgValue : bgValue;
         outputImageIt.Set(value);
         
         ++inputImageIt;
@@ -137,7 +139,7 @@ ChamferDistanceTransformImageFilter<InputImage, OutputImage>
         {
             if(it.GetPixel(i) < NumericTraits<typename OutputImageType::PixelType>::max() - mask[i])
             {
-                minimum = std::min(minimum, it.GetPixel(i) + mask[i]);
+                minimum = std::min(minimum, static_cast<typename OutputImageType::PixelType>(it.GetPixel(i) + mask[i]));
             }
         }
         if(minimum < it.GetCenterPixel())
@@ -159,7 +161,7 @@ ChamferDistanceTransformImageFilter<InputImage, OutputImage>
         {
             if(it.GetPixel(i) < NumericTraits<typename OutputImageType::PixelType>::max() - mask[i])
             {
-                minimum = std::min(minimum, it.GetPixel(i) + mask[i]);
+                minimum = std::min(minimum, static_cast<typename OutputImageType::PixelType>(it.GetPixel(i) + mask[i]));
             }
         }
         if(minimum < it.GetCenterPixel())
@@ -174,7 +176,7 @@ ChamferDistanceTransformImageFilter<InputImage, OutputImage>
     {
         if(it.GetPixel(i) < NumericTraits<typename OutputImageType::PixelType>::max() - mask[i])
         {
-            minimum = std::min(minimum, it.GetPixel(i) + mask[i]);
+            minimum = std::min(minimum, static_cast<typename OutputImageType::PixelType>(it.GetPixel(i) + mask[i]));
         }
     }
     if(minimum < it.GetCenterPixel())

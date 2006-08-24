@@ -1,7 +1,7 @@
 #ifndef itkSimplicityByTopologicalNumbersImageFunction_h
 #define itkSimplicityByTopologicalNumbersImageFunction_h
 
-#include <itkImageFunction.h>
+#include "itkBinaryImageFunction.h"
 
 #include "BackgroundConnectivity.h"
 #include "TopologicalNumberFunction.h"
@@ -12,7 +12,7 @@ namespace itk
 template<typename TImage, 
          typename TForegroundConnectivity, 
          typename TBackgroundConnectivity = typename BackgroundConnectivity<TForegroundConnectivity>::Type  >
-class SimplicityByTopologicalNumbersImageFunction : public itk::ImageFunction<TImage, bool >
+class SimplicityByTopologicalNumbersImageFunction : public itk::BinaryImageFunction<TImage, bool >
 {
 public :
     /**
@@ -20,18 +20,19 @@ public :
      */
     //@{
     typedef SimplicityByTopologicalNumbersImageFunction Self;
-    typedef itk::ImageFunction<TImage, bool > Superclass;
+    typedef itk::BinaryImageFunction<TImage, bool > Superclass;
     typedef itk::SmartPointer<Self> Pointer;
     typedef itk::SmartPointer<Self const> ConstPointer;
 
     itkNewMacro(Self);
-    itkTypeMacro(SimplicityByTopologicalNumbersImageFunction, ImageFunction);
+    itkTypeMacro(SimplicityByTopologicalNumbersImageFunction, BinaryImageFunction);
     
     typedef typename Superclass::PointType PointType;
     typedef typename Superclass::ContinuousIndexType ContinuousIndexType;
     typedef typename Superclass::IndexType IndexType;
     
     typedef typename Superclass::InputImageType InputImageType;
+    typedef typename Superclass::InputPixelType InputPixelType;
     //@}
     
     /**
@@ -58,6 +59,8 @@ public :
         Superclass::SetInputImage(ptr);
         m_TnCounter->SetInputImage(ptr);
     }
+
+  virtual void SetForegroundValue(const InputPixelType &);
 
 private :
     SimplicityByTopologicalNumbersImageFunction(Self const &); // not implemented
