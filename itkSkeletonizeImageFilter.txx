@@ -6,7 +6,7 @@
 #include <itkImageRegionConstIteratorWithIndex.h>
 #include <itkNumericTraits.h>
 
-#include "hierarchical_queue.h"
+#include "itkPriorityQueue.h"
 
 #include "itkLineTerminalityImageFunction.h"
 #include "itkSimplicityByTopologicalNumbersImageFunction.h"
@@ -58,7 +58,7 @@ SkeletonizeImageFilter<TImage, TForegroundConnectivity>
     typename OutputImageType::Pointer outputImage = this->GetOutput(0);
     
     // Initialize hierarchical queue
-    hierarchical_queue<typename OrderingImageType::PixelType, 
+    PriorityQueue<typename OrderingImageType::PixelType, 
                        typename InputImageType::IndexType, 
                        std::less<typename OrderingImageType::PixelType> > q;
     
@@ -74,7 +74,7 @@ SkeletonizeImageFilter<TImage, TForegroundConnectivity>
     {
         if(it.Get() != NumericTraits<typename OrderingImageType::PixelType>::Zero )
         {
-            q.push(it.Get(), it.GetIndex());
+            q.Push(it.Get(), it.GetIndex());
             inQueue[ outputImage->ComputeOffset(it.GetIndex()) ] = true;
         }
         else
@@ -86,10 +86,10 @@ SkeletonizeImageFilter<TImage, TForegroundConnectivity>
     
     ForegroundConnectivity const & connectivity = ForegroundConnectivity::GetInstance();
     
-    while(!q.empty())
+    while(!q.Empty())
     {
-        typename InputImageType::IndexType const current = q.front();
-        q.pop();
+        typename InputImageType::IndexType const current = q.FrontValue();
+        q.Pop();
         inQueue[outputImage->ComputeOffset(current)] = false;
         
         bool const terminal = m_TerminalityCriterion->EvaluateAtIndex(current);
@@ -113,7 +113,7 @@ SkeletonizeImageFilter<TImage, TForegroundConnectivity>
                     !inQueue[outputImage->ComputeOffset(currentNeighbor)]  /* and not in queue */ &&  
                     orderingImage->GetPixel(currentNeighbor) != NumericTraits<typename OrderingImageType::PixelType>::Zero /*and has not 0 priority*/)
                 {
-                    q.push(orderingImage->GetPixel(currentNeighbor), currentNeighbor);
+                    q.Push(orderingImage->GetPixel(currentNeighbor), currentNeighbor);
                     inQueue[outputImage->ComputeOffset(currentNeighbor)] = true;
                 }
             }
