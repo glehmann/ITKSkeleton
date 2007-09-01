@@ -1,5 +1,5 @@
-#ifndef Connectivity_h
-#define Connectivity_h
+#ifndef itkConnectivity_h
+#define itkConnectivity_h
 
 #include <itkMacro.h>
 
@@ -11,7 +11,8 @@ namespace itk
 /**
  * @brief Connectivity information.
  *
- * This class describes the k-neighbors of a point in a digital space of dimension n.
+ * This class describes the k-neighbors of a point in a digital space of 
+ * dimension n.
  * The definition used for this connectivity is the one using cell 
  * decomposition, as defined by Malandain in "On Topology in Multidimensional 
  * Discrete Spaces", ftp://ftp.inria.fr/INRIA/publication/RR/RR-2098.ps.gz
@@ -25,43 +26,43 @@ namespace itk
  * corresponding to 2-, 1- and 0-connectivity.
  */
 template<unsigned int VDim, unsigned int VCellDim>
-class Connectivity
-{
-public :
+class ITK_EXPORT Connectivity
+  {
+  public :
     /// @brief Type for a point in n-D.
     typedef vnl_vector_fixed<int, VDim> Point;
     
     /// @brief Offset in an array.
     typedef unsigned int Offset;
-    
+      
     /// @brief The dimension of the space.
     itkStaticConstMacro(Dimension, unsigned int, VDim);
-    
+      
     /// @brief The dimension of the cell.
     itkStaticConstMacro(CellDimension, unsigned int, VCellDim);
-    
+      
     unsigned int GetNeighborhoodSize() const
-    {
-        return m_NeighborhoodSize;
-    }
-    
+      {
+      return m_NeighborhoodSize;
+      }
+      
     unsigned int GetNumberOfNeighbors() const
-    {
-        return m_NumberOfNeighbors;
-    }
+      {
+      return m_NumberOfNeighbors;
+      }
     
     /// @brief Accessor to the singleton.
     static Connectivity<VDim, VCellDim> const & GetInstance();
     
     Point const * const GetNeighborsPoints() const
-    {
-        return m_NeighborsPoints;
-    }
-    
+      {
+      return m_NeighborsPoints;
+      }
+      
     Point const * const GetNeighborsOffsets() const
-    {
-        return m_NeighborsOffsets;
-    }
+      {
+      return m_NeighborsOffsets;
+      }
     
     /// @brief Test if two points are neighbors
     bool AreNeighbors(Point const & p1, Point const & p2) const;
@@ -81,9 +82,8 @@ public :
     /// @brief Convert a point to an offset, in a 3x3x3 cube
     Offset PointToOffset(Point const p) const;
     
-private :
-
-    static Connectivity<VDim, VCellDim> const * m_Instance;
+  private :
+     static Connectivity<VDim, VCellDim> const * m_Instance;
     
     /// @brief Size of the whole neighborhood.
     unsigned int const m_NeighborhoodSize;
@@ -107,12 +107,12 @@ private :
     Connectivity & operator=(Connectivity<VDim, VCellDim> const & other);
     
     static int ComputeNumberOfNeighbors();
-};
+  };
 
 }
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "Connectivity.txx"
+#include "itkConnectivity.txx"
 #endif
 
-#endif // Connectivity_h
+#endif // itkConnectivity_h

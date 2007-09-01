@@ -1,9 +1,9 @@
-#ifndef UnitCubeCCCounter_h
-#define UnitCubeCCCounter_h
+#ifndef itkUnitCubeCCCounter_h
+#define itkUnitCubeCCCounter_h
 
 #include <vector>
 
-#include "UnitCubeNeighbors.h"
+#include "itkUnitCubeNeighbors.h"
 
 namespace itk
 {
@@ -13,10 +13,14 @@ namespace itk
  * unit cube. This class is used for topological number computation, and 
  * should be mostly useless in any other cases.
  */
-template< typename TConnectivity, typename TNeighborhoodConnectivity = typename NeighborhoodConnectivity<TConnectivity>::Type >
-class UnitCubeCCCounter
-{
-public :
+template< typename TConnectivity, 
+
+          typename TNeighborhoodConnectivity = 
+
+            typename NeighborhoodConnectivity<TConnectivity>::Type >
+class ITK_EXPORT UnitCubeCCCounter
+  {
+  public :
     UnitCubeCCCounter();
     ~UnitCubeCCCounter();
     
@@ -24,9 +28,8 @@ public :
     
     template<typename Iterator>
     void SetImage(Iterator imageBegin, Iterator imageEnd);
-    
-private :
-    
+      
+  private :
     template<typename C>
     static std::vector<bool> CreateConnectivityTest();
     
@@ -36,10 +39,14 @@ private :
     char* m_Image;
     
     static UnitCubeNeighbors<TConnectivity, TNeighborhoodConnectivity > const m_UnitCubeNeighbors;
-};
+  };
 
 }
 
-#include "UnitCubeCCCounter.txx"
 
-#endif // UnitCubeCCCounter_h
+#ifndef ITK_MANUAL_INSTANTIATION
+#include "itkUnitCubeCCCounter.txx"
+
+#endif
+
+#endif // itkUnitCubeCCCounter_h

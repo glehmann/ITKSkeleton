@@ -2,12 +2,11 @@
 #define itkSkeletonizationImageFilter_h
 
 #include <itkImage.h>
-#include "itkBinaryImageFunction.h"
+#include <itkBinaryImageFunction.h>
 #include <itkInPlaceImageFilter.h>
 
 namespace itk
 {
-
 
 /**
  * @brief Computes the skeleton of an image using homotopic thinning.
@@ -33,10 +32,10 @@ namespace itk
  */
 template<typename TImage, typename TForegroundConnectivity>
 class SkeletonizeImageFilter : public InPlaceImageFilter<TImage>
-{
-public :
+  {
+  public :
     /**
-     * @name Standard ITK boilerplate
+     * @name Standard ITK declarations
      */
     //@{
     typedef SkeletonizeImageFilter Self;
@@ -62,7 +61,9 @@ public :
      */
     //@{
     typedef unsigned int OrderingVoxelType;
-    typedef Image<OrderingVoxelType, InputImageType::ImageDimension> OrderingImageType;
+    typedef Image<OrderingVoxelType, InputImageType::ImageDimension> 
+
+      OrderingImageType;
     //@}
     
     /**
@@ -85,16 +86,11 @@ public :
      * @name Accessors for the ordering image.
      */
     //@{
-    void SetOrderingImage(OrderingImageType *input)
-      {
-      // Process object is not const-correct so the const casting is required.
-      this->SetNthInput( 1, const_cast<OrderingImageType *>(input) );
-      }
-  
-    OrderingImageType * GetOrderingImage()
-      {
-      return static_cast<OrderingImageType*>(const_cast<DataObject *>(this->ProcessObject::GetInput(1)));
-      }
+    void SetOrderingImage(OrderingImageType *input);
+
+    OrderingImageType * GetOrderingImage();
+
+
     //@}
     
     /**
@@ -117,23 +113,25 @@ public :
      * @brief Connectivity used in the foreground of the image.
      */
     typedef TForegroundConnectivity ForegroundConnectivity;
-    
+      
+  protected :
     SkeletonizeImageFilter();
-    
-protected :
+    SkeletonizeImageFilter(Self const &); // Purposedly not implemented
+    void operator=(Self const &); // Purposedly not implemented
+
     void PrintSelf(std::ostream& os, Indent indent) const;
-    
+    void GenerateInputRequestedRegion();
     void GenerateData();
     
-    void GenerateInputRequestedRegion();
-
-    typename Criterion::Pointer m_SimplicityCriterion;
-    typename Criterion::Pointer m_TerminalityCriterion;
-
+    typename OrderingImageType::Pointer m_OrderingImage;
+    
+    typename BinaryImageFunction<TImage, bool >::Pointer m_SimplicityCriterion;
+    typename BinaryImageFunction<TImage, bool >::Pointer m_TerminalityCriterion;
+      
     InputPixelType m_ForegroundValue;
     InputPixelType m_BackgroundValue;
-    
-};
+
+  };
 
 } // namespace itk
 

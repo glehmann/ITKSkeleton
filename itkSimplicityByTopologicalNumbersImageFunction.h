@@ -1,22 +1,26 @@
 #ifndef itkSimplicityByTopologicalNumbersImageFunction_h
 #define itkSimplicityByTopologicalNumbersImageFunction_h
 
-#include "itkBinaryImageFunction.h"
+#include <itkBinaryImageFunction.h>
 
-#include "BackgroundConnectivity.h"
-#include "TopologicalNumberFunction.h"
+#include "itkBackgroundConnectivity.h"
+#include "itkTopologicalNumberImageFunction.h"
 
 namespace itk
 {
 
 template<typename TImage, 
          typename TForegroundConnectivity, 
-         typename TBackgroundConnectivity = typename BackgroundConnectivity<TForegroundConnectivity>::Type  >
-class SimplicityByTopologicalNumbersImageFunction : public itk::BinaryImageFunction<TImage, bool >
-{
-public :
+         typename TBackgroundConnectivity = 
+
+            typename BackgroundConnectivity<TForegroundConnectivity>::Type >
+class ITK_EXPORT SimplicityByTopologicalNumbersImageFunction : 
+
+  public itk::BinaryImageFunction<TImage, bool >
+  {
+  public :
     /**
-     * @name Standard ITK boilerplate
+     * @name Standard ITK declarations
      */
     //@{
     typedef SimplicityByTopologicalNumbersImageFunction Self;
@@ -55,21 +59,27 @@ public :
     //@}
     
     void SetInputImage(InputImageType const * ptr)
-    {
-        Superclass::SetInputImage(ptr);
-        m_TnCounter->SetInputImage(ptr);
-    }
+      {
+      Superclass::SetInputImage(ptr);
+      m_TnCounter->SetInputImage(ptr);
+      }
+      
+    virtual void SetForegroundValue(const InputPixelType &);virtual void SetForegroundValue(const InputPixelType &);
 
-  virtual void SetForegroundValue(const InputPixelType &);
-
-private :
-    SimplicityByTopologicalNumbersImageFunction(Self const &); // not implemented
+  private :
+    SimplicityByTopologicalNumbersImageFunction(Self const &); //not implemented
     Self & operator=(Self const &); // not implemented
-    typename TopologicalNumberImageFunction<TImage, TForegroundConnectivity>::Pointer m_TnCounter;
-};
+    typename TopologicalNumberImageFunction<TImage, 
+
+      TForegroundConnectivity>::Pointer m_TnCounter;
+  };
 
 }
 
+
+#ifndef ITK_MANUAL_INSTANTIATION
 #include "itkSimplicityByTopologicalNumbersImageFunction.txx"
+
+#endif
 
 #endif // itkSimplicityByTopologicalNumbersImageFunction_h

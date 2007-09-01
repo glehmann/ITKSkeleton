@@ -3,7 +3,7 @@
 
 #include "itkBinaryImageFunction.h"
 
-#include "BackgroundConnectivity.h"
+#include "itkBackgroundConnectivity.h"
 
 namespace itk
 {
@@ -15,7 +15,7 @@ class LineTerminalityImageFunction : public itk::BinaryImageFunction<TImage, boo
 {
 public :
     /**
-     * @name Standard ITK boilerplate
+     * @name Standard ITK declarations
      */
     //@{
     typedef LineTerminalityImageFunction Self;
@@ -50,13 +50,17 @@ public :
     bool EvaluateAtContinuousIndex(ContinuousIndexType const & contIndex) const;
     //@}
 
-private :
+  private :
     LineTerminalityImageFunction(Self const &); // not implemented
     Self & operator=(Self const &); // not implemented
-};
+  };
 
 }
 
+
+#ifndef ITK_MANUAL_INSTANTIATION
 #include "itkLineTerminalityImageFunction.txx"
+
+#endif
 
 #endif // itkLineTerminalityImageFunction_hxx

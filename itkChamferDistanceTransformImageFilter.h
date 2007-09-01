@@ -17,9 +17,11 @@ namespace itk
  * 64(3), pp. 368--376, 1996.
  */
 template<typename InputImage, typename OutputImage>
-class ChamferDistanceTransformImageFilter : public ImageToImageFilter<InputImage, OutputImage>
-{
-public :
+class ITK_EXPORT ChamferDistanceTransformImageFilter : 
+
+  public ImageToImageFilter<InputImage, OutputImage>
+  {
+  public :
     /**
      * @name Standard ITK declarations
      */
@@ -28,12 +30,12 @@ public :
     typedef ImageToImageFilter<InputImage, OutputImage> Superclass;
     typedef SmartPointer<Self> Pointer;
     typedef SmartPointer<Self const> ConstPointer;
-    
+
     itkNewMacro(Self);
     itkTypeMacro(ChamferDistanceTransformImageFilter, ImageToImageFilter);
-    
+
     //@}
-    
+
     /**
      * @name Standard filter typedefs.
      */
@@ -51,16 +53,11 @@ public :
      * Weights are set to 1, and distanceFromObject is set to true.
      */
     ChamferDistanceTransformImageFilter();
-    
-    /**
-     * @brief Select if the distance is computed from the object (in the 
-     * background) or from the background (in the object).
-     *
-     * It is initialized to true, so by default the distance is computed
-     * from the object, in the background.
-     */
-    bool distanceFromObject;
-    
+
+    itkGetConstMacro(DistanceFromObject, bool);
+
+    itkSetMacro(DistanceFromObject, bool);
+
     /**
      * @brief Assign the weights used in the distance transform.
      *
@@ -69,31 +66,50 @@ public :
      */
     template<typename Iterator>
     void SetWeights(Iterator begin, Iterator end);
-    
+
     /**
      * @brief Return the weights used in the distance transform.
      */
     std::vector<typename OutputImage::PixelType> GetWeights() const;
 
-    /** Set/Get the foreground value. Defaults to max */
-    itkSetMacro(ForegroundValue, InputPixelType);
-    itkGetMacro(ForegroundValue, InputPixelType);
-
-protected :
+  protected :
     void PrintSelf(std::ostream& os, Indent indent) const;
     
     void GenerateData();    
 
-private :
+  private :
     typename OutputImage::PixelType m_Weights[OutputImage::ImageDimension];
     
     ChamferDistanceTransformImageFilter(Self const &); // not implemented
     Self & operator=(Self const &); // not implemented
+
+
+
+    /**
+
+     * @brief Select if the distance is computed from the object (in the 
+
+     * background) or from the background (in the object).
+
+     *
+
+     * It is initialized to true, so by default the distance is computed
+
+     * from the object, in the background.
+
+     */
+
+    bool m_DistanceFromObject;
+    
     InputPixelType m_ForegroundValue;
-};
+  };
 
 }
 
+
+#ifndef ITK_MANUAL_INSTANTIATION
 #include "itkChamferDistanceTransformImageFilter.txx"
+
+#endif
 
 #endif // itkChamferDistanceTransformImageFilter_h
