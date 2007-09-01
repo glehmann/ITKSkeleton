@@ -1,7 +1,7 @@
 #ifndef itkSimplicityByTopologicalNumbersImageFunction_h
 #define itkSimplicityByTopologicalNumbersImageFunction_h
 
-#include <itkBinaryImageFunction.h>
+#include "itkBinaryImageFunction.h"
 
 #include "itkBackgroundConnectivity.h"
 #include "itkTopologicalNumberImageFunction.h"
@@ -64,7 +64,7 @@ class ITK_EXPORT SimplicityByTopologicalNumbersImageFunction :
       m_TnCounter->SetInputImage(ptr);
       }
       
-    virtual void SetForegroundValue(const InputPixelType &);virtual void SetForegroundValue(const InputPixelType &);
+    virtual void SetForegroundValue(const InputPixelType &);
 
   private :
     SimplicityByTopologicalNumbersImageFunction(Self const &); //not implemented

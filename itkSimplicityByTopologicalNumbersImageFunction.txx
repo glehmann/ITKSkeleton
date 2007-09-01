@@ -61,6 +61,8 @@ SimplicityByTopologicalNumbersImageFunction<TImage, TForegroundConnectivity, TBa
   this->m_TnCounter->SetForegroundValue( v );
 }
 
+template<typename TImage, typename TForegroundConnectivity, 
+
          typename TBackgroundConnectivity >
 bool
 SimplicityByTopologicalNumbersImageFunction<TImage, TForegroundConnectivity, 

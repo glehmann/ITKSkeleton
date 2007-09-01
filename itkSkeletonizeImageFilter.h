@@ -2,7 +2,7 @@
 #define itkSkeletonizationImageFilter_h
 
 #include <itkImage.h>
-#include <itkBinaryImageFunction.h>
+#include "itkBinaryImageFunction.h"
 #include <itkInPlaceImageFilter.h>
 
 namespace itk
