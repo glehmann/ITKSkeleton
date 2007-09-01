@@ -71,6 +71,9 @@ class ITK_EXPORT ChamferDistanceTransformImageFilter :
      * @brief Return the weights used in the distance transform.
      */
     std::vector<typename OutputImage::PixelType> GetWeights() const;
+    
+    itkSetMacro(ForegroundValue, InputPixelType);
+    itkGetMacro(ForegroundValue, InputPixelType);
 
   protected :
     void PrintSelf(std::ostream& os, Indent indent) const;

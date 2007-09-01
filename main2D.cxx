@@ -25,7 +25,7 @@ int main(int argc, char** argv)
     typedef itk::ChamferDistanceTransformImageFilter<Image, Skeletonizer::OrderingImageType> DistanceMapFilterType;
     DistanceMapFilterType::Pointer distanceMapFilter = DistanceMapFilterType::New();
     unsigned int weights[] = { 16, 21 };
-    distanceMapFilter->distanceFromObject = false;
+    distanceMapFilter->SetDistanceFromObject( false );
     distanceMapFilter->SetWeights(weights, weights+3);
     distanceMapFilter->SetInput(image);
     distanceMapFilter->SetForegroundValue( 100 );

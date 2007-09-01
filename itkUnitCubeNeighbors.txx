@@ -1,7 +1,9 @@
 #ifndef itkUnitCubeNeighbors_txx
 #define itkUnitCubeNeighbors_txx
 
+
 #include "itkUnitCubeNeighbors.h"
+
 
 namespace itk
 {
@@ -10,14 +12,18 @@ template<typename Connectivity, typename NeighborhoodConnectivity>
 UnitCubeNeighbors<Connectivity, NeighborhoodConnectivity>
 ::UnitCubeNeighbors()
 : neighborhoodSize(
+
     static_cast<int>(std::pow(3.f, static_cast<float>(Connectivity::Dimension)))), 
   neighborsInUnitCube(
+
     std::vector<std::vector<bool> >(
+
       neighborhoodSize , std::vector<bool>(neighborhoodSize, false) ) )
   {
-  assert(Connectivity::Dimension == NeighborhoodConnectivity::Dimension);
+  assert(static_cast<int>(Connectivity::Dimension) == static_cast<int>(NeighborhoodConnectivity::Dimension));
   Connectivity const & connectivity = Connectivity::GetInstance();
   NeighborhoodConnectivity const & neighborhoodConnectivity = 
+
     NeighborhoodConnectivity::GetInstance();
   
   for(int neighbor1 = 0; neighbor1 < neighborhoodSize; ++neighbor1)
@@ -41,6 +47,7 @@ UnitCubeNeighbors<Connectivity, NeighborhoodConnectivity>
         
         bool inUnitCube = true;
         for(unsigned int dim = 0; 
+
             dim < Connectivity::Dimension && inUnitCube; ++dim)
           {
           if(sum[dim] < -1 || sum[dim] > +1) 
@@ -63,8 +70,10 @@ template<typename Connectivity, typename NeighborhoodConnectivity>
 bool 
 UnitCubeNeighbors<Connectivity, NeighborhoodConnectivity>
 ::operator()(typename UnitCubeNeighbors<Connectivity, 
+
                NeighborhoodConnectivity>::Offset const o1, 
              typename UnitCubeNeighbors<Connectivity, 
+
                NeighborhoodConnectivity>::Offset const o2) const
   {
   return neighborsInUnitCube[o1][o2];
@@ -75,8 +84,10 @@ template<typename Connectivity, typename NeighborhoodConnectivity>
 bool 
 UnitCubeNeighbors<Connectivity, NeighborhoodConnectivity>
 ::operator()(typename UnitCubeNeighbors<Connectivity, 
+
                NeighborhoodConnectivity>::Point const p1, 
              typename UnitCubeNeighbors<Connectivity, 
+
                NeighborhoodConnectivity>::Point const p2) const
   {
   Connectivity const & connectivity = Connectivity::getInstance();

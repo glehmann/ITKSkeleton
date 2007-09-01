@@ -66,9 +66,9 @@ SET(CurrentExe "main")
 ADD_EXECUTABLE(${CurrentExe} ${CurrentExe}.cxx)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
 
-# SET(CurrentExe "main2D")
-# ADD_EXECUTABLE(${CurrentExe} ${CurrentExe}.cxx)
-#ÊTARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
+SET(CurrentExe "main2D")
+ADD_EXECUTABLE(${CurrentExe} ${CurrentExe}.cxx)
+TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
 
 ENDIF(BUILD_TESTING)
 
