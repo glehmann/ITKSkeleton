@@ -11,6 +11,14 @@
 
 int main(int argc, char** argv)
 {
+
+  if( argc != 3 )
+    {
+    std::cerr << "usage: " << argv[0] << " input output" << std::endl;
+    // std::cerr << "  : " << std::endl;
+    exit(1);
+    }
+
     const int dim = 2;
     typedef itk::Image<unsigned char, dim> Image;
     
