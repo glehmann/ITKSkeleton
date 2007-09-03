@@ -81,5 +81,14 @@ ENDIF(BUILD_TESTING)
 #any tests you can comment out or delete the following line.
 # ADD_TEST(Testname ExecutableToRun arg1 arg2 arg3)
 
-ADD_TEST(Run check ${INPUT_IMAGE} out.png)
-ADD_TEST(CompareImage ${IMAGE_COMPARE} out.png ${CMAKE_SOURCE_DIR}/images/test.png)
+ADD_TEST(Test2D ${TEST_COMMAND}
+   main2D ${INPUT_IMAGE} out.png
+   --compare out.png ${CMAKE_SOURCE_DIR}/images/test.png
+   100 0
+)
+
+ADD_TEST(Test3D ${TEST_COMMAND}
+   main ${CMAKE_SOURCE_DIR}/images/bunnyPadded.nrrd out.tif
+   --compare out.tif ${CMAKE_SOURCE_DIR}/images/bunnySkeleton.nrrd
+   255 0
+)

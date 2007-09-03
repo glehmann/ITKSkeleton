@@ -20,10 +20,10 @@ namespace itk
 template<typename InputImage, typename OutputImage>
 ChamferDistanceTransformImageFilter<InputImage, OutputImage>
 ::ChamferDistanceTransformImageFilter()
-: m_DistanceFromObject(true)
   {
   std::fill(m_Weights, m_Weights+OutputImage::ImageDimension, 1);
   m_ForegroundValue = NumericTraits<InputPixelType>::max();
+  m_DistanceFromObject = false;
   }
 
 
@@ -97,7 +97,7 @@ ChamferDistanceTransformImageFilter<InputImage, OutputImage>
   typename OutputImageType::PixelType const bgValue = 
 
     NumericTraits<typename OutputImageType::PixelType>::max() - fgValue;
-  
+
   itk::ImageRegionConstIterator<InputImageType> 
 
     inputImageIt(this->GetInput(0), this->GetInput()->GetRequestedRegion());

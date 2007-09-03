@@ -12,9 +12,9 @@
 int main(int argc, char** argv)
 {
 
-  if( argc != 3 )
+  if( argc != 5 )
     {
-    std::cerr << "usage: " << argv[0] << " input output" << std::endl;
+    std::cerr << "usage: " << argv[0] << " input output fg bg" << std::endl;
     // std::cerr << "  : " << std::endl;
     exit(1);
     }
@@ -34,16 +34,17 @@ int main(int argc, char** argv)
     DistanceMapFilterType::Pointer distanceMapFilter = DistanceMapFilterType::New();
     unsigned int weights[] = { 16, 21 };
     distanceMapFilter->SetDistanceFromObject( false );
-    distanceMapFilter->SetWeights(weights, weights+3);
+    distanceMapFilter->SetWeights(weights, weights+2);
     distanceMapFilter->SetInput(image);
-    distanceMapFilter->SetForegroundValue( 100 );
+    distanceMapFilter->SetForegroundValue( atoi(argv[3]) );
 //     itk::SimpleFilterWatcher watcher(distanceMapFilter, "distanceMapFilter");
     distanceMapFilter->Update();
     
     Skeletonizer::Pointer skeletonizer = Skeletonizer::New();
     skeletonizer->SetInput(image);
     skeletonizer->SetOrderingImage(distanceMapFilter->GetOutput());
-    skeletonizer->SetForegroundValue( 100 );
+    skeletonizer->SetForegroundValue( atoi(argv[3]) );
+    skeletonizer->SetBackgroundValue( atoi(argv[4]) );
     itk::SimpleFilterWatcher watcher2(skeletonizer, "skeletonizer");
     
     itk::ImageFileWriter<Image>::Pointer writer = itk::ImageFileWriter<Image>::New();

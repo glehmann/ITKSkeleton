@@ -150,9 +150,9 @@ SkeletonizeImageFilter<TImage, TForegroundConnectivity>
       SimplicityByTopologicalNumbersImageFunction<OutputImageType, 
 
         TForegroundConnectivity>::New();
-    m_SimplicityCriterion->SetInputImage(this->GetInput());
     }
   
+  m_SimplicityCriterion->SetInputImage(this->GetInput());
   m_SimplicityCriterion->SetForegroundValue( m_ForegroundValue );
   
   if(m_TerminalityCriterion.IsNull())
@@ -162,10 +162,11 @@ SkeletonizeImageFilter<TImage, TForegroundConnectivity>
       LineTerminalityImageFunction<OutputImageType, 
 
         TForegroundConnectivity>::New();
-    m_TerminalityCriterion->SetInputImage(this->GetInput());
     }
   
+  m_TerminalityCriterion->SetInputImage(this->GetInput());
   m_TerminalityCriterion->SetForegroundValue( m_ForegroundValue );
+
   typename OutputImageType::Pointer outputImage = this->GetOutput(0);
   
   // Initialize hierarchical queue
@@ -235,7 +236,7 @@ SkeletonizeImageFilter<TImage, TForegroundConnectivity>
 
               outputImage->GetPixel(currentNeighbor) == 
 
-              m_BackgroundValue && 
+              m_ForegroundValue && 
 
             /* and not in queue */
               !inQueue[outputImage->ComputeOffset(currentNeighbor)]   &&
