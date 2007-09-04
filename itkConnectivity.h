@@ -1,9 +1,11 @@
 #ifndef itkConnectivity_h
 #define itkConnectivity_h
 
-#include <itkMacro.h>
-
-#include <vnl/vnl_vector_fixed.h>
+#include <itkObject.h>
+#include <itkIndex.h>
+#include <itkOffset.h>
+#include <itkImage.h>
+#include <vector>
 
 namespace itk
 {
@@ -25,89 +27,92 @@ namespace itk
  * 0-connectivities. In 3D, 6-, 18- and 26-connectivity are respectively
  * corresponding to 2-, 1- and 0-connectivity.
  */
-template<unsigned int VDim, unsigned int VCellDim>
-class ITK_EXPORT Connectivity
-  {
-  public :
-    /// @brief Type for a point in n-D.
-    typedef vnl_vector_fixed<int, VDim> Point;
-    
-    /// @brief Offset in an array.
-    typedef unsigned int Offset;
-      
-    /// @brief The dimension of the space.
-    itkStaticConstMacro(Dimension, unsigned int, VDim);
-      
-    /// @brief The dimension of the cell.
-    itkStaticConstMacro(CellDimension, unsigned int, VCellDim);
-      
-    unsigned int GetNeighborhoodSize() const
-      {
-      return m_NeighborhoodSize;
-      }
-      
-    unsigned int GetNumberOfNeighbors() const
-      {
-      return m_NumberOfNeighbors;
-      }
-    
-    /// @brief Accessor to the singleton.
-    static Connectivity<VDim, VCellDim> const & GetInstance();
-    
-    Point const * const GetNeighborsPoints() const
-      {
-      return m_NeighborsPoints;
-      }
-      
-    Point const * const GetNeighborsOffsets() const
-      {
-      return m_NeighborsOffsets;
-      }
-    
-    /// @brief Test if two points are neighbors
-    bool AreNeighbors(Point const & p1, Point const & p2) const;
-    
-    /// @brief Test if two points are neighbors
-    bool AreNeighbors(Offset const & o1, Point const & o2) const;
-    
-    /// @brief Test if a point is a neighbor of 0
-    bool IsInNeighborhood(Point const & p) const;
-    
-    /// @brief Test if a point is a neighbor of 0
-    bool IsInNeighborhood(Offset const & o) const;
-    
-    /// @brief Convert an offset to a point, in a 3x3x3 cube
-    Point OffsetToPoint(Offset const offset) const;
-    
-    /// @brief Convert a point to an offset, in a 3x3x3 cube
-    Offset PointToOffset(Point const p) const;
-    
-  private :
-     static Connectivity<VDim, VCellDim> const * m_Instance;
-    
-    /// @brief Size of the whole neighborhood.
-    unsigned int const m_NeighborhoodSize;
-    
-    /// @brief Number of neighbors
-    unsigned int const m_NumberOfNeighbors;
-    
-    /// @brief Neighbors as points.
-    Point * const m_NeighborsPoints;
-    
-    /// @brief Neighbors as offsets.
-    Offset * const m_NeighborsOffsets;
+template<unsigned int VDimension>
+class ITK_EXPORT Connectivity  : public LightObject
+{
+public :
 
-    Connectivity();
-    ~Connectivity();
+  /// Standard typedefs
+  typedef Connectivity Self;
+  typedef LightObject         Superclass;
+  typedef SmartPointer<Self>  Pointer;
+  typedef SmartPointer<const Self>  ConstPointer;
+
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
+
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(Connectivity, LightObject);
+
+  /// @brief The dimension of the space.
+  itkStaticConstMacro(Dimension, unsigned int, VDimension);
     
-    // Purposedly not implemeted
-    Connectivity(Connectivity<VDim, VCellDim> const & other);
-    
-    // Purposedly not implemeted
-    Connectivity & operator=(Connectivity<VDim, VCellDim> const & other);
-    
-    static int ComputeNumberOfNeighbors();
-  };
+  /// @brief Type for a point in n-D.
+  typedef Offset< Dimension >  OffsetType;
+  typedef Index< Dimension >   IndexType;
+
+  typedef std::vector< OffsetType > OffsetContainerType;
+  
+  /// @brief Test if two points are neighbors
+  bool AreNeighbors(IndexType const & p1, IndexType const & p2) const;
+  
+  /// @brief Test if a point is a neighbor of 0
+  bool IsInNeighborhood( OffsetType const & p ) const;
+
+  const OffsetContainerType & GetNeighbors() const;
+
+  static int GetNeighborhoodSize();
+
+  int GetNumberOfNeighbors() const;
+  
+
+  /** Set/Get the cell dimension. The FullyConnected methods are their
+    * to make easier the implementation of the backward compatibility,
+    * and the manipulation of the cell dimension.
+    */
+  void SetCellDimension( int dim );
+
+  const int & GetCellDimension() const;
+
+  void SetFullyConnected( bool value );
+
+  bool GetFullyConnected() const;
+
+
+  /** helper methods */
+  static int factorial( int );
+
+  static OffsetType IntToOffset( int );
+
+  static int OffsetToInt( const OffsetType & offset );
+
+  int ComputeNumberOfNeighbors();
+
+
+  /** Set/Get the global default cell dimension */
+  static const int & GetGlobalDefaultCellDimension();
+
+  static void SetGlobalDefaultCellDimension( int nb );
+
+  static void SetGlobalDefaultFullyConnected( bool value );
+
+  static bool GetGlobalDefaultFullyConnected();
+
+private :
+  // Purposedly not implemeted
+  Connectivity(Self const & other);
+  Connectivity & operator=(Self const & other);
+  
+  Connectivity();
+  ~Connectivity() {};
+  
+  /// @brief Neighbors.
+  OffsetContainerType m_Neighbors;
+
+  int m_CellDimension;
+
+  static int m_GlobalDefaultCellDimension;
+};
 
 }
 

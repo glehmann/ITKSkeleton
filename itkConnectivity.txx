@@ -6,169 +6,259 @@
 namespace itk
 {
 
-template<unsigned int VDim, unsigned int VCellDim>
-Connectivity<VDim, VCellDim> const *
-Connectivity<VDim, VCellDim>
-::m_Instance = 0;
-
-template<unsigned int VDim, unsigned int VCellDim>
-Connectivity<VDim, VCellDim> const &
-Connectivity<VDim, VCellDim>
-::GetInstance()
-  {
-  if(m_Instance == 0)
-    {
-    m_Instance = new Connectivity<VDim, VCellDim>;
-    }
-    
-  return (*m_Instance) ;
-  }
+template<unsigned int VDimension>
+int
+Connectivity<VDimension>
+::m_GlobalDefaultCellDimension = VDimension - 1;
 
 
-template<unsigned int VDim, unsigned int VCellDim>
-Connectivity<VDim, VCellDim>
+template<unsigned int VDimension>
+Connectivity<VDimension>
 ::Connectivity()
-: m_NeighborhoodSize(static_cast<int>(std::pow(3.0, static_cast<double>(VDim)))),
-  m_NumberOfNeighbors( ComputeNumberOfNeighbors() ), 
-  m_NeighborsPoints(new Point[m_NumberOfNeighbors] ),
-  m_NeighborsOffsets(new Offset[m_NumberOfNeighbors] )
-  {
-  int currentNbNeighbors = 0;
-  
-  for(int i=0; i< m_NeighborhoodSize; ++i)
-    {
-    Point const p = OffsetToPoint(i);
-        
-    unsigned int const numberOfZeros = std::count(p.begin(), p.end(), 0);
-        
-    if( numberOfZeros!=VDim && numberOfZeros >= VCellDim)
-      {
-      *(m_NeighborsPoints+currentNbNeighbors) = p;
-      *(m_NeighborsOffsets+currentNbNeighbors) = i;
-      ++currentNbNeighbors;
-      }
-    }
-  }
+{
+  this->SetCellDimension( m_GlobalDefaultCellDimension );
+}
 
 
-template<unsigned int VDim, unsigned int VCellDim>
-Connectivity<VDim, VCellDim>
-::~Connectivity()
-  {
-  delete[] m_NeighborsPoints;
-  delete[] m_NeighborsOffsets;
-  }
-
-
-template<unsigned int VDim, unsigned int VCellDim>
+template<unsigned int VDimension>
 bool
-Connectivity<VDim, VCellDim>
-::AreNeighbors(Point const & p1, Point const & p2) const
-  {
-  Point difference;
-  for(unsigned int i=0; i<VDim; ++i)
+Connectivity<VDimension>
+::AreNeighbors(IndexType const & p1, IndexType const & p2) const
+{
+  OffsetType diff;
+  for(unsigned int i=0; i<VDimension; ++i)
     {
-    difference[i] = p1[i] - p2[i];
+    diff[i] = p1[i] - p2[i];
     }
   
-  Point* const iterator = 
-    std::find(m_NeighborsPoints, m_NeighborsPoints+m_NumberOfNeighbors, 
-              difference);
-  return ( iterator != m_NeighborsPoints+m_NumberOfNeighbors );
-  }
+  return this->IsInNeighborhood( diff );
+}
 
 
-template<unsigned int VDim, unsigned int VCellDim>
-bool
-Connectivity<VDim, VCellDim>
-::AreNeighbors(Offset const & o1, Point const & o2) const
-  {
-  /// @todo
-  assert(false && "not implemented");
-  return false;
-  }
-    
-    
-template<unsigned int VDim, unsigned int VCellDim>
+template<unsigned int VDimension>
 bool 
-Connectivity<VDim, VCellDim>
-::IsInNeighborhood(Point const & p) const
-  {
-  Point* const iterator = 
-    std::find(m_NeighborsPoints, m_NeighborsPoints+m_NumberOfNeighbors, p);
-  return ( iterator != m_NeighborsPoints+m_NumberOfNeighbors );
-  }
+Connectivity<VDimension>
+::IsInNeighborhood(OffsetType const & o) const
+{
+  OffsetType* const iterator = 
+    std::find(m_Neighbors.begin(), m_Neighbors.end(), o);
+  return (iterator != m_Neighbors.end());
+}
 
 
-template<unsigned int VDim, unsigned int VCellDim>
-bool 
-Connectivity<VDim, VCellDim>
-::IsInNeighborhood(Offset const & o) const
-  {
-  Offset* const iterator = 
-    std::find(m_NeighborsOffsets, m_NeighborsOffsets+m_NumberOfNeighbors, o);
-  return (iterator != m_NeighborsOffsets+m_NumberOfNeighbors);
-  }
+template<unsigned int VDimension>
+const typename Connectivity<VDimension>::OffsetContainerType &
+Connectivity<VDimension>
+::GetNeighbors() const
+{
+  return m_Neighbors;
+}
 
 
-template<unsigned int VDim, unsigned int VCellDim>
-typename Connectivity<VDim, VCellDim>::Point
-Connectivity<VDim, VCellDim>
-::OffsetToPoint(Offset const offset) const
-  {
-  Offset remainder = offset;
-  Point p;
-  
-  for(unsigned int i=0; i<Dimension; ++i)
-    {
-    p[i] = remainder % 3;
-    remainder -= p[i];
-    remainder /= 3;
-    --p[i];
-    }
-  
-  return p;
-  }
+template<unsigned int VDimension>
+int
+Connectivity<VDimension>
+::GetNeighborhoodSize()
+{
+  return static_cast<int>(vcl_pow( 3.0, static_cast<double>(VDimension) ) );
+}
 
 
-template<unsigned int VDim, unsigned int VCellDim>
-typename Connectivity<VDim, VCellDim>::Offset
-Connectivity<VDim, VCellDim>
-::PointToOffset(Point const p) const
-  {
-  Offset offset=0;
-  Offset factor=1;
-  for(unsigned int i=0; i<Dimension; ++i)
-    {
-    offset += factor * (p[i]+1);
-    factor *= 3;
-    }
-  
-  return offset;
-  }
+template<unsigned int VDimension>
+int
+Connectivity<VDimension>
+::GetNumberOfNeighbors() const
+{
+  return m_Neighbors.size();
+}
 
 
-int factorial(int n)
-  {
-  if(n<=1) return 1;
-  else return n*factorial(n-1);
-  }
-
-template<unsigned int VDim, unsigned int VCellDim>
+template<unsigned int VDimension>
 int 
-Connectivity<VDim, VCellDim>
+Connectivity<VDimension>
 ::ComputeNumberOfNeighbors()
-  {
+{
   int numberOfNeighbors = 0;
-  for(unsigned int i = VCellDim; i <= VDim-1; ++i)
+  for(unsigned int i = m_CellDimension; i <= VDimension-1; ++i)
     {
     numberOfNeighbors += 
-      factorial(VDim)/(factorial(VDim-i)*factorial(i)) * 1<<(VDim-i);
+      factorial(VDimension)/(factorial(VDimension-i)*factorial(i)) * 1<<(VDimension-i);
     }
   
   return numberOfNeighbors;
-  }
-
 }
 
+
+template<unsigned int VDimension>
+void 
+Connectivity<VDimension>
+::SetCellDimension( int dim )
+{
+  // TODO: check validity of the cell dimension
+  m_CellDimension = dim;
+
+  m_Neighbors.clear();
+  m_Neighbors.reserve( this->ComputeNumberOfNeighbors() );
+
+  int neighborhoodSize = this->GetNeighborhoodSize();
+  for(int i=0; i< neighborhoodSize; ++i)
+    {
+    OffsetType const offset = IntToOffset( i );
+        
+    unsigned int numberOfZeros = 0;
+    for( int j=0; j<Dimension; j++ )
+      {
+      if( offset[j] == 0 )
+        {
+        numberOfZeros++;
+        }
+      }
+    
+    if( numberOfZeros!=VDimension && numberOfZeros >= m_CellDimension)
+      {
+      m_Neighbors.push_back( offset );
+      }
+    }
+}
+
+
+template<unsigned int VDimension>
+const int &
+Connectivity<VDimension>
+::GetCellDimension() const
+{
+  return m_CellDimension;
+}
+
+
+template<unsigned int VDimension>
+void 
+Connectivity<VDimension>
+::SetFullyConnected( bool value )
+{
+  if( value )
+    {
+    this->SetCellDimension( 0 );
+    }
+  else
+    {
+    this->SetCellDimension( Dimension - 1 );
+    }
+}
+
+
+template<unsigned int VDimension>
+bool 
+Connectivity<VDimension>
+::GetFullyConnected() const
+{
+  if( m_CellDimension == 0 )
+    {
+    return true;
+    }
+  // not really true, but return false otherwise
+  return false;
+}
+
+
+template<unsigned int VDimension>
+typename Connectivity<VDimension>::OffsetType
+Connectivity<VDimension>
+::IntToOffset( int i )
+{
+  OffsetType o;
+  
+  for( int d=0; d<Dimension; d++ )
+    {
+    o[d] = i % 3;
+    i -= o[d];
+    i /= 3;
+    --o[d];
+    }
+  
+  return o;
+}
+
+
+template<unsigned int VDimension>
+int
+Connectivity<VDimension>
+::OffsetToInt( const OffsetType & o )
+{
+  int i=0;
+  int factor=1;
+  for(unsigned int d=0; d<Dimension; ++d)
+    {
+    d += factor * (o[d]+1);
+    factor *= 3;
+    }
+  
+  return i;
+}
+
+
+template<unsigned int VDimension>
+int
+Connectivity<VDimension>
+::factorial( int n )
+  {
+  if( n<=1 )
+    {
+    return 1;
+    }
+  return n * factorial( n-1 );
+  }
+
+
+template<unsigned int VDimension>
+void 
+Connectivity<VDimension>
+::SetGlobalDefaultCellDimension( int dim )
+{
+  // TODO: check validity of the cell dimension
+  m_GlobalDefaultCellDimension = dim;
+}
+
+
+template<unsigned int VDimension>
+const int &
+Connectivity<VDimension>
+::GetGlobalDefaultCellDimension()
+{
+  return m_GlobalDefaultCellDimension;
+}
+
+
+template<unsigned int VDimension>
+void 
+Connectivity<VDimension>
+::SetGlobalDefaultFullyConnected( bool value )
+{
+  if( value )
+    {
+    m_GlobalDefaultCellDimension = 0;
+    }
+  else
+    {
+    m_GlobalDefaultCellDimension = Dimension - 1;
+    }
+}
+
+
+template<unsigned int VDimension>
+bool 
+Connectivity<VDimension>
+::GetGlobalDefaultFullyConnected()
+{
+  if( m_GlobalDefaultCellDimension == 0 )
+    {
+    return true;
+    }
+  // not really true, but return false otherwise
+  return false;
+}
+
+
+
+};
 #endif // itkConnectivity_txx
