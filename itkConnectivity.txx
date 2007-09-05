@@ -40,7 +40,7 @@ bool
 Connectivity<VDimension>
 ::IsInNeighborhood(OffsetType const & o) const
 {
-  OffsetType* const iterator = 
+  typename OffsetContainerType::const_iterator iterator = 
     std::find(m_Neighbors.begin(), m_Neighbors.end(), o);
   return (iterator != m_Neighbors.end());
 }
