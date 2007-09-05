@@ -29,7 +29,10 @@ int main(int argc, char** argv)
   IteratorType It = connectivity->Iterator<IteratorType>( img, img->GetLargestPossibleRegion() );*/
   
   ConstIteratorType constIt = connectivity->ConstIterator<ConstIteratorType>( constImg, constImg->GetLargestPossibleRegion() );
-  IteratorType It = connectivity->Iterator<IteratorType>( img, constImg->GetLargestPossibleRegion() );
+  IteratorType it = connectivity->Iterator<IteratorType>( img, constImg->GetLargestPossibleRegion() );
+  
+  constIt = connectivity->ConstLaterIterator<ConstIteratorType>( constImg, constImg->GetLargestPossibleRegion() );
+  it = connectivity->LaterIterator<IteratorType>( img, constImg->GetLargestPossibleRegion() );
   
   
   return EXIT_SUCCESS;

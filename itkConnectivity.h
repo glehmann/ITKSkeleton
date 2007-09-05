@@ -133,6 +133,92 @@ public :
     }
 
 
+  template < class IteratorType >
+  IteratorType LaterIterator( typename IteratorType::ImageType * img, const typename IteratorType::RegionType & region ) const
+    {
+    typename IteratorType::SizeType radius;
+    radius.Fill( 1 );
+    IteratorType it( radius, img, region );
+    unsigned int centerIndex = it.GetCenterNeighborhoodIndex();
+    OffsetType offset;
+    for( unsigned int d=centerIndex+1; d < 2*centerIndex+1; d++ )
+      {
+      offset = it.GetOffset( d );
+      if( this->IsInNeighborhood( offset ) )
+        {
+        it.ActivateOffset( offset );
+        }
+      }
+    offset.Fill(0);
+    it.DeactivateOffset( offset );
+    return it;
+    }
+
+  template < class ConstIteratorType >
+  ConstIteratorType ConstLaterIterator( const typename ConstIteratorType::ImageType * img, const typename ConstIteratorType::RegionType & region ) const
+    {
+    typename ConstIteratorType::SizeType radius;
+    radius.Fill( 1 );
+    ConstIteratorType it( radius, img, region );
+    unsigned int centerIndex = it.GetCenterNeighborhoodIndex();
+    OffsetType offset;
+    for( unsigned int d=centerIndex+1; d < 2*centerIndex+1; d++ )
+      {
+      offset = it.GetOffset( d );
+      if( this->IsInNeighborhood( offset ) )
+        {
+        it.ActivateOffset( offset );
+        }
+      }
+    offset.Fill(0);
+    it.DeactivateOffset( offset );
+    return it;
+    }
+
+
+  template < class IteratorType >
+  IteratorType PreviousIterator( typename IteratorType::ImageType * img, const typename IteratorType::RegionType & region ) const
+    {
+    typename IteratorType::SizeType radius;
+    radius.Fill( 1 );
+    IteratorType it( radius, img, region );
+    unsigned int centerIndex = it.GetCenterNeighborhoodIndex();
+    OffsetType offset;
+    for( unsigned int d=0; d < centerIndex; d++ )
+      {
+      offset = it.GetOffset( d );
+      if( this->IsInNeighborhood( offset ) )
+        {
+        it.ActivateOffset( offset );
+        }
+      }
+    offset.Fill(0);
+    it.DeactivateOffset( offset );
+    return it;
+    }
+
+  template < class ConstIteratorType >
+  ConstIteratorType ConstPreviousIterator( const typename ConstIteratorType::ImageType * img, const typename ConstIteratorType::RegionType & region ) const
+    {
+    typename ConstIteratorType::SizeType radius;
+    radius.Fill( 1 );
+    ConstIteratorType it( radius, img, region );
+    unsigned int centerIndex = it.GetCenterNeighborhoodIndex();
+    OffsetType offset;
+    for( unsigned int d=0; d < centerIndex; d++ )
+      {
+      offset = it.GetOffset( d );
+      if( this->IsInNeighborhood( offset ) )
+        {
+        it.ActivateOffset( offset );
+        }
+      }
+    offset.Fill(0);
+    it.DeactivateOffset( offset );
+    return it;
+    }
+
+
 protected:
 
   void PrintSelf(std::ostream& os, Indent indent) const;
