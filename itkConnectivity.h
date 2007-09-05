@@ -105,6 +105,33 @@ public :
 
   static int GetGlobalDefaultNumberOfNeighbors();
 
+  /** creation of equivalent iterators */
+  template < class IteratorType >
+  IteratorType Iterator( typename IteratorType::ImageType * img, const typename IteratorType::RegionType & region ) const
+    {
+    typename IteratorType::SizeType radius;
+    radius.Fill( 1 );
+    IteratorType it( radius, img, region );
+    for( int i=0; i<m_Neighbors.size(); i++ )
+      {
+      it.ActivateOffset( m_Neighbors[i] );
+      }
+    return it;
+    }
+
+  template < class ConstIteratorType >
+  ConstIteratorType ConstIterator( const typename ConstIteratorType::ImageType * img, const typename ConstIteratorType::RegionType & region ) const
+    {
+    typename ConstIteratorType::SizeType radius;
+    radius.Fill( 1 );
+    ConstIteratorType it( radius, img, region );
+    for( int i=0; i<m_Neighbors.size(); i++ )
+      {
+      it.ActivateOffset( m_Neighbors[i] );
+      }
+    return it;
+    }
+
 
 protected:
 
