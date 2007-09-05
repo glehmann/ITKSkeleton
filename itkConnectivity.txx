@@ -74,12 +74,36 @@ Connectivity<VDimension>
 
 
 template<unsigned int VDimension>
+void
+Connectivity<VDimension>
+::SetNumberOfNeighbors( int nb )
+{
+  // and search a matching cell dimension. It should be quite
+  // fast with usual dimensions.
+  bool found = false;
+  for( int i=0; i<=VDimension && !found; i++ )
+    {
+    if( ComputeNumberOfNeighbors( i ) == nb )
+      {
+      this->SetCellDimension( i );
+      found = true;
+      }
+    }
+  if( !found )
+    {
+    // send an exception
+    itkExceptionMacro( << nb << " is not a valid number of neighbors for dimension " << VDimension << ".");
+    }
+}
+
+
+template<unsigned int VDimension>
 int 
 Connectivity<VDimension>
-::ComputeNumberOfNeighbors()
+::ComputeNumberOfNeighbors( int cellDimension )
 {
   int numberOfNeighbors = 0;
-  for(unsigned int i = m_CellDimension; i <= VDimension-1; ++i)
+  for(unsigned int i = cellDimension; i <= VDimension-1; ++i)
     {
     numberOfNeighbors += 
       factorial(VDimension)/(factorial(VDimension-i)*factorial(i)) * 1<<(VDimension-i);
@@ -94,11 +118,16 @@ void
 Connectivity<VDimension>
 ::SetCellDimension( int dim )
 {
-  // TODO: check validity of the cell dimension
+  // check the validity of the requested cell dimension
+  if( dim < 0 || dim > VDimension )
+    {
+    itkExceptionMacro( << dim << " is not a valid cell dimension for dimension " << VDimension << "." );
+    }
+
   m_CellDimension = dim;
 
   m_Neighbors.clear();
-  m_Neighbors.reserve( this->ComputeNumberOfNeighbors() );
+  m_Neighbors.reserve( ComputeNumberOfNeighbors( dim ) );
 
   int neighborhoodSize = this->GetNeighborhoodSize();
   for(int i=0; i< neighborhoodSize; ++i)
@@ -215,7 +244,12 @@ void
 Connectivity<VDimension>
 ::SetGlobalDefaultCellDimension( int dim )
 {
-  // TODO: check validity of the cell dimension
+  // check the validity of the requested cell dimension
+  if( dim < 0 || dim > VDimension )
+    {
+    itkGenericExceptionMacro( << dim << " is not a valid cell dimension for dimension " << VDimension << "." );
+    }
+
   m_GlobalDefaultCellDimension = dim;
 }
 
@@ -256,6 +290,61 @@ Connectivity<VDimension>
     }
   // not really true, but return false otherwise
   return false;
+}
+
+
+template<unsigned int VDimension>
+int
+Connectivity<VDimension>
+::GetGlobalDefaultNumberOfNeighbors()
+{
+  return ComputeNumberOfNeighbors( m_GlobalDefaultCellDimension );
+}
+
+
+template<unsigned int VDimension>
+void
+Connectivity<VDimension>
+::SetGlobalDefaultNumberOfNeighbors( int nb )
+{
+  // and search a matching cell dimension. It should be quite
+  // fast with usual dimensions.
+  bool found = false;
+  for( int i=0; i<=VDimension && !found; i++ )
+    {
+    if( ComputeNumberOfNeighbors( i ) == nb )
+      {
+      SetGlobalDefaultCellDimension( i );
+      found = true;
+      }
+    }
+  if( !found )
+    {
+    // send an exception
+    itkGenericExceptionMacro( << nb << " is not a valid number of neighbors for dimension " << VDimension << ".");
+    }
+}
+
+
+template<unsigned int VDimension>
+void 
+Connectivity<VDimension>
+::PrintSelf(std::ostream& os, Indent indent) const
+{
+  Superclass::PrintSelf( os, indent );
+  os << indent << "CellDimension: " << m_CellDimension << std::endl;
+  os << indent << "NumberOfNeighbors: " << this->GetNumberOfNeighbors() << std::endl;
+  os << indent << "FullyConnected: " << this->GetFullyConnected() << std::endl;
+  os << indent << "Neighbors: [ ";
+  for( int i=0; i<m_Neighbors.size(); i++ )
+    {
+    os << m_Neighbors[i] << " ";
+    }
+  os << "]" << std::endl;
+  os << indent << "GlobalDefaultCellDimension: " << m_GlobalDefaultCellDimension << std::endl;
+  os << indent << "GlobalDefaultNumberOfNeighbors: " << GetGlobalDefaultNumberOfNeighbors() << std::endl;
+  os << indent << "GlobalDefaultFullyConnected: " << GetGlobalDefaultFullyConnected() << std::endl;
+
 }
 
 

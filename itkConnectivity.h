@@ -63,12 +63,12 @@ public :
 
   static int GetNeighborhoodSize();
 
-  int GetNumberOfNeighbors() const;
-  
 
   /** Set/Get the cell dimension. The FullyConnected methods are their
     * to make easier the implementation of the backward compatibility,
     * and the manipulation of the cell dimension.
+    * SetGetNumberOfNeighbors() allow an more usual way to access the connectivity
+    * (8-connected, 26-connected, ...) but dependent of the image dimension.
     */
   void SetCellDimension( int dim );
 
@@ -78,6 +78,9 @@ public :
 
   bool GetFullyConnected() const;
 
+  void SetNumberOfNeighbors( int );
+
+  int GetNumberOfNeighbors() const;
 
   /** helper methods */
   static int factorial( int );
@@ -86,7 +89,7 @@ public :
 
   static int OffsetToInt( const OffsetType & offset );
 
-  int ComputeNumberOfNeighbors();
+  static int ComputeNumberOfNeighbors( int cellDimension );
 
 
   /** Set/Get the global default cell dimension */
@@ -97,6 +100,16 @@ public :
   static void SetGlobalDefaultFullyConnected( bool value );
 
   static bool GetGlobalDefaultFullyConnected();
+
+  static void SetGlobalDefaultNumberOfNeighbors( int );
+
+  static int GetGlobalDefaultNumberOfNeighbors();
+
+
+protected:
+
+  void PrintSelf(std::ostream& os, Indent indent) const;
+
 
 private :
   // Purposedly not implemeted
