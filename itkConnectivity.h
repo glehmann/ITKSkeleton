@@ -1,5 +1,5 @@
-#ifndef itkConnectivity_h
-#define itkConnectivity_h
+#ifndef __itkConnectivity_h
+#define __itkConnectivity_h
 
 #include <itkObject.h>
 #include <itkIndex.h>
@@ -293,4 +293,4 @@ IteratorType PreviousConnectivityIterator( IteratorType * it, ConnectivityType *
 #include "itkConnectivity.txx"
 #endif
 
-#endif // itkConnectivity_h
+#endif // __itkConnectivity_h
