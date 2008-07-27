@@ -70,9 +70,9 @@ public :
     * SetGetNumberOfNeighbors() allow an more usual way to access the connectivity
     * (8-connected, 26-connected, ...) but dependent of the image dimension.
     */
-  void SetCellDimension( int dim );
+  void SetCellDimension( unsigned int dim );
 
-  const int & GetCellDimension() const;
+  const unsigned int & GetCellDimension() const;
 
   void SetFullyConnected( bool value );
 
@@ -95,7 +95,7 @@ public :
   /** Set/Get the global default cell dimension */
   static const int & GetGlobalDefaultCellDimension();
 
-  static void SetGlobalDefaultCellDimension( int nb );
+  static void SetGlobalDefaultCellDimension( unsigned int nb );
 
   static void SetGlobalDefaultFullyConnected( bool value );
 
@@ -112,7 +112,7 @@ public :
     typename IteratorType::SizeType radius;
     radius.Fill( 1 );
     IteratorType it( radius, img, region );
-    for( int i=0; i<m_Neighbors.size(); i++ )
+    for( unsigned int i=0; i<m_Neighbors.size(); i++ )
       {
       it.ActivateOffset( m_Neighbors[i] );
       }
@@ -125,7 +125,7 @@ public :
     typename ConstIteratorType::SizeType radius;
     radius.Fill( 1 );
     ConstIteratorType it( radius, img, region );
-    for( int i=0; i<m_Neighbors.size(); i++ )
+    for( unsigned int i=0; i<m_Neighbors.size(); i++ )
       {
       it.ActivateOffset( m_Neighbors[i] );
       }
@@ -235,7 +235,7 @@ private :
   /// @brief Neighbors.
   OffsetContainerType m_Neighbors;
 
-  int m_CellDimension;
+  unsigned int m_CellDimension;
 
   static int m_GlobalDefaultCellDimension;
 };

@@ -116,7 +116,7 @@ Connectivity<VDimension>
 template<unsigned int VDimension>
 void 
 Connectivity<VDimension>
-::SetCellDimension( int dim )
+::SetCellDimension( unsigned int dim )
 {
   // check the validity of the requested cell dimension
   if( dim < 0 || dim > VDimension )
@@ -152,7 +152,7 @@ Connectivity<VDimension>
 
 
 template<unsigned int VDimension>
-const int &
+const unsigned int &
 Connectivity<VDimension>
 ::GetCellDimension() const
 {
@@ -242,7 +242,7 @@ Connectivity<VDimension>
 template<unsigned int VDimension>
 void 
 Connectivity<VDimension>
-::SetGlobalDefaultCellDimension( int dim )
+::SetGlobalDefaultCellDimension( unsigned int dim )
 {
   // check the validity of the requested cell dimension
   if( dim < 0 || dim > VDimension )
@@ -310,7 +310,7 @@ Connectivity<VDimension>
   // and search a matching cell dimension. It should be quite
   // fast with usual dimensions.
   bool found = false;
-  for( int i=0; i<=VDimension && !found; i++ )
+  for( unsigned int i=0; i<=VDimension && !found; i++ )
     {
     if( ComputeNumberOfNeighbors( i ) == nb )
       {
@@ -336,7 +336,7 @@ Connectivity<VDimension>
   os << indent << "NumberOfNeighbors: " << this->GetNumberOfNeighbors() << std::endl;
   os << indent << "FullyConnected: " << this->GetFullyConnected() << std::endl;
   os << indent << "Neighbors: [ ";
-  for( int i=0; i<m_Neighbors.size(); i++ )
+  for( unsigned int i=0; i<m_Neighbors.size(); i++ )
     {
     os << m_Neighbors[i] << " ";
     }
